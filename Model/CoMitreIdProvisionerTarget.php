@@ -507,12 +507,25 @@ class CoMitreIdProvisionerTarget extends CoProvisionerPluginTarget
       }
       // Is needed for :admins group
       else if(!empty($data['delete_cou'])) { //cou Deleted
-         // Delete All Entitlements For this Cou
-         $paths= SyncEntitlements::getCouTreeStructure(array($data['cou']));     
-         $cou_name = $paths[$data['cou']['cou_id']]['path'];   
-         MitreId::deleteEntitlementsByCou($mitre_id, $cou_name, $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_namespace'],
-                                          $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_legacy'], 
-                                          $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_authority']);
+        // Delete All Entitlements For this Cou
+        $paths= SyncEntitlements::getCouTreeStructure(array($data['cou']));
+        $cou_name = null;
+        if(!empty($paths) && !empty($data['cou']['cou_id'])) {
+          $cou_name = $paths[$data['cou']['cou_id']]['path'];
+        } else {
+          $Cou = ClassRegistry::init('Cou');
+          $Cou->id = $data['cou']['cou_id'];
+          $cou_name = $Cou->field('name');
+        }
+        if(!is_null($cou_name)) {
+          MitreId::deleteEntitlementsByCou(
+            $mitre_id,
+            $cou_name,
+            $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_namespace'],
+            $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_legacy'],
+            $coProvisioningTargetData['CoMitreIdProvisionerTarget']['urn_authority']
+          );
+        }
       }
       else {
         //Get Person by the epuid
