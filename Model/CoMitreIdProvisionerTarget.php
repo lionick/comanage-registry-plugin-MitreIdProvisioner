@@ -592,7 +592,9 @@ class CoMitreIdProvisionerTarget extends CoProvisionerPluginTarget
     // XXX i can not let COmanage treat $cou_id = null as ok since i allow Null COUs. This means that
     // XXX we will get back the default CO Role, which will be the wrong one.
     $args = array();
-    $args['conditions']['CoPerson.id'] = $provisioningData["CoPerson"]["id"];
+    if(!empty($provisioningData["CoPerson"])){
+      $args['conditions']['CoPerson.id'] = $provisioningData["CoPerson"]["id"];
+    }
     if(isset($cou_id)) {
       $args['contain']['CoPersonRole'] = array(
         'conditions' => ['CoPersonRole.cou_id' => $cou_id],  // XXX Be carefull with the null COUs
